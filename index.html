@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport"
-content="width=device-width, initial-scale=1.0">
+content="width=device-width,
+initial-scale=1.0,
+maximum-scale=1.0,
+user-scalable=no">
 
 <title>Love Chat Login</title>
 
@@ -96,13 +99,6 @@ background:linear-gradient(90deg,#ff77c8,#7d7bff);
 color:white;
 }
 
-.loading{
-margin-top:15px;
-font-size:14px;
-color:#777;
-display:none;
-}
-
 </style>
 </head>
 
@@ -136,8 +132,7 @@ onclick="login()">
 class="google-btn"
 onclick="googleLogin()">
 
-<img
-src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png">
+<img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png">
 
 Login with Google
 
@@ -149,12 +144,6 @@ onclick="guestLogin()">
 เข้าใช้งานเลย
 </button>
 
-<div
-class="loading"
-id="loading">
-กำลังเข้าสู่ระบบ...
-</div>
-
 </div>
 
 <script type="module">
@@ -163,21 +152,40 @@ import { initializeApp }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
+
 getAuth,
+
 GoogleAuthProvider,
-signInWithPopup,
+
+signInWithRedirect,
+
+getRedirectResult,
+
 signInWithEmailAndPassword,
+
 createUserWithEmailAndPassword,
+
+signInAnonymously,
+
 onAuthStateChanged
+
 }
+
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 import {
+
 getFirestore,
+
 doc,
+
 setDoc
+
 }
+
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+/* FIREBASE */
 
 const firebaseConfig = {
 
@@ -195,13 +203,17 @@ appId: "1:968361508229:web:ece12a37d93ef48418d8ec"
 
 };
 
-const app = initializeApp(firebaseConfig);
+const app =
+initializeApp(firebaseConfig);
 
-const auth = getAuth(app);
+const auth =
+getAuth(app);
 
-const db = getFirestore(app);
+const db =
+getFirestore(app);
 
-const provider = new GoogleAuthProvider();
+const provider =
+new GoogleAuthProvider();
 
 /* AUTO LOGIN */
 
@@ -209,7 +221,8 @@ onAuthStateChanged(auth,(user)=>{
 
 if(user){
 
-window.location.href = "mom1.html";
+window.location.href =
+"mom1.html";
 
 }
 
@@ -217,7 +230,8 @@ window.location.href = "mom1.html";
 
 /* EMAIL LOGIN */
 
-window.login = async function(){
+window.login =
+async function(){
 
 const email =
 document.getElementById("email").value;
@@ -225,7 +239,7 @@ document.getElementById("email").value;
 const password =
 document.getElementById("password").value;
 
-if(email == "" || password == ""){
+if(email=="" || password==""){
 
 alert("กรอกข้อมูลก่อน");
 
@@ -233,69 +247,56 @@ return;
 
 }
 
-document.getElementById("loading")
-.style.display = "block";
-
 try{
 
 const userCredential =
+
 await createUserWithEmailAndPassword(
 auth,
 email,
 password
 );
 
-const user = userCredential.user;
+const user =
+userCredential.user;
 
-await setDoc(doc(db,"users",user.uid),{
+await saveUser(user,"email");
 
-uid:user.uid,
-
-email:user.email,
-
-type:"email",
-
-createdAt:new Date().toISOString()
-
-},{merge:true});
-
-window.location.href = "mom1.html";
+window.location.href =
+"mom1.html";
 
 }
 
 catch(error){
 
-if(error.code ===
-"auth/email-already-in-use"){
+if(
+error.code ==
+"auth/email-already-in-use"
+){
 
 try{
 
 const result =
+
 await signInWithEmailAndPassword(
 auth,
 email,
 password
 );
 
-const user = result.user;
+await saveUser(
+result.user,
+"email"
+);
 
-await setDoc(doc(db,"users",user.uid),{
-
-uid:user.uid,
-
-email:user.email,
-
-lastLogin:new Date().toISOString()
-
-},{merge:true});
-
-window.location.href = "mom1.html";
+window.location.href =
+"mom1.html";
 
 }
 
 catch(err){
 
-alert("รหัสผ่านผิด");
+alert(err.message);
 
 }
 
@@ -309,42 +310,19 @@ alert(error.message);
 
 }
 
-document.getElementById("loading")
-.style.display = "none";
-
 }
 
 /* GOOGLE LOGIN */
 
-window.googleLogin = async function(){
-
-document.getElementById("loading")
-.style.display = "block";
+window.googleLogin =
+async function(){
 
 try{
 
-const result =
-await signInWithPopup(auth, provider);
-
-const user = result.user;
-
-await setDoc(doc(db,"users",user.uid),{
-
-uid:user.uid,
-
-name:user.displayName || "ไม่มีชื่อ",
-
-email:user.email || "",
-
-photo:user.photoURL || "",
-
-type:"google",
-
-loginTime:new Date().toISOString()
-
-},{merge:true});
-
-window.location.href = "mom1.html";
+await signInWithRedirect(
+auth,
+provider
+);
 
 }
 
@@ -354,16 +332,99 @@ alert(error.message);
 
 }
 
-document.getElementById("loading")
-.style.display = "none";
+}
+
+/* REDIRECT RESULT */
+
+getRedirectResult(auth)
+
+.then(async(result)=>{
+
+if(result){
+
+const user =
+result.user;
+
+await saveUser(
+user,
+"google"
+);
+
+window.location.href =
+"mom1.html";
 
 }
 
-/* GUEST */
+})
 
-window.guestLogin = function(){
+.catch((error)=>{
 
-window.location.href = "mom1.html";
+console.log(error);
+
+});
+
+/* GUEST LOGIN */
+
+window.guestLogin =
+async function(){
+
+try{
+
+const result =
+
+await signInAnonymously(auth);
+
+await saveUser(
+result.user,
+"guest"
+);
+
+window.location.href =
+"mom1.html";
+
+}
+
+catch(error){
+
+alert(error.message);
+
+}
+
+}
+
+/* SAVE USER */
+
+async function saveUser(user,type){
+
+await setDoc(
+
+doc(db,"users",user.uid),
+
+{
+
+uid:user.uid,
+
+name:
+user.displayName ||
+"ผู้ใช้ใหม่",
+
+email:
+user.email || "",
+
+photo:
+user.photoURL ||
+"https://cdn-icons-png.flaticon.com/512/4140/4140048.png",
+
+type:type,
+
+loginTime:
+new Date().toISOString()
+
+},
+
+{merge:true}
+
+);
 
 }
 
@@ -381,10 +442,15 @@ document.addEventListener(
 'touchend',
 function (event) {
 
-const now = (new Date()).getTime();
+const now =
+(new Date()).getTime();
 
-if (now - lastTouchEnd <= 300) {
+if (
+now - lastTouchEnd <= 300
+) {
+
 event.preventDefault();
+
 }
 
 lastTouchEnd = now;
