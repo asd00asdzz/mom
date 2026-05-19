@@ -67,9 +67,9 @@ align-items:center;
 }
 
 .avatar{
-width:140px;
-height:140px;
-border-radius:35px;
+width:150px;
+height:150px;
+border-radius:40px;
 object-fit:cover;
 background:#ffe4f4;
 box-shadow:0 10px 20px rgba(255,120,180,0.12);
@@ -84,7 +84,7 @@ color:#444;
 
 .userid{
 margin-top:12px;
-font-size:19px;
+font-size:18px;
 font-weight:bold;
 color:#7b61ff;
 background:white;
@@ -95,7 +95,7 @@ box-shadow:0 5px 15px rgba(0,0,0,0.05);
 
 .bio{
 margin-top:10px;
-font-size:17px;
+font-size:16px;
 color:#777;
 text-align:center;
 padding:0 20px;
@@ -111,7 +111,7 @@ margin-bottom:120px;
 .post{
 background:white;
 border-radius:28px;
-padding:14px;
+padding:15px;
 margin-bottom:20px;
 box-shadow:0 5px 15px rgba(0,0,0,0.05);
 }
@@ -128,12 +128,14 @@ width:55px;
 height:55px;
 border-radius:18px;
 object-fit:cover;
+cursor:pointer;
 }
 
 .post-username{
 font-size:18px;
 font-weight:bold;
 color:#222;
+cursor:pointer;
 }
 
 .post-image{
@@ -146,16 +148,16 @@ margin-bottom:12px;
 
 .post-text{
 font-size:20px;
-font-weight:600;
+font-weight:bold;
 line-height:1.5;
 color:#222;
-margin-bottom:12px;
+margin-bottom:10px;
 white-space:pre-wrap;
 word-break:break-word;
 }
 
 .post-tags{
-font-size:16px;
+font-size:15px;
 font-weight:bold;
 color:#7b61ff;
 margin-bottom:12px;
@@ -166,8 +168,8 @@ word-break:break-word;
 display:flex;
 justify-content:space-between;
 align-items:center;
-padding-top:12px;
 border-top:1px solid #eee;
+padding-top:12px;
 }
 
 .action-btn{
@@ -210,7 +212,7 @@ border:none;
 background:#a855f7;
 color:white;
 border-radius:15px;
-font-size:17px;
+font-size:16px;
 font-weight:bold;
 }
 
@@ -229,12 +231,12 @@ word-break:break-word;
 position:fixed;
 right:25px;
 bottom:110px;
-width:68px;
-height:68px;
+width:70px;
+height:70px;
 border-radius:50%;
 background:#a855f7;
 color:white;
-font-size:40px;
+font-size:45px;
 display:flex;
 justify-content:center;
 align-items:center;
@@ -359,6 +361,7 @@ display:flex;
 justify-content:space-around;
 padding:15px;
 box-shadow:0 0 15px rgba(0,0,0,0.08);
+z-index:999;
 }
 
 .bottom div{
@@ -384,7 +387,8 @@ font-weight:bold;
 
 <div class="logo-box"></div>
 
-<div class="setting">
+<div class="setting"
+onclick="window.location.href='momsetting.html'">
 ⚙️
 </div>
 
@@ -394,20 +398,25 @@ font-weight:bold;
 
 <div class="profile">
 
-<img id="avatar"
-class="avatar">
+<img
+id="avatar"
+class="avatar"
+src="https://cdn-icons-png.flaticon.com/512/4140/4140048.png">
 
-<div class="username"
+<div
+class="username"
 id="username">
 กำลังโหลด...
 </div>
 
-<div class="userid"
+<div
+class="userid"
 id="userid">
 ID : ......
 </div>
 
-<div class="bio"
+<div
+class="bio"
 id="bio">
 ...
 </div>
@@ -416,20 +425,23 @@ id="bio">
 
 <!-- POSTS -->
 
-<div class="feed"
+<div
+class="feed"
 id="feed">
 </div>
 
 <!-- FLOAT BUTTON -->
 
-<div class="add-post-btn"
+<div
+class="add-post-btn"
 onclick="openPopup()">
 +
 </div>
 
 <!-- POPUP -->
 
-<div class="popup"
+<div
+class="popup"
 id="popup">
 
 <div class="popup-box">
@@ -438,7 +450,8 @@ id="popup">
 สร้างโพสต์
 </div>
 
-<div class="upload-box"
+<div
+class="upload-box"
 onclick="pickImage()">
 
 <div id="uploadText">
@@ -446,7 +459,8 @@ onclick="pickImage()">
 ใส่รูป
 </div>
 
-<img id="previewImage"
+<img
+id="previewImage"
 style="display:none;">
 
 </div>
@@ -460,7 +474,7 @@ placeholder="ใส่ข้อความ..."></textarea>
 type="text"
 id="hashtags"
 class="hashtag"
-placeholder="#เท่ #เกม #ความรัก #ชีวิต #เพื่อน">
+placeholder="#เกม #เท่ #ชีวิต #ความรัก #เพื่อน">
 
 <div class="popup-buttons">
 
@@ -488,7 +502,7 @@ id="imageInput"
 accept="image/*"
 style="display:none;">
 
-<!-- ใส่แทน div class="bottom" เดิม -->
+<!-- MENU -->
 
 <div class="bottom">
 
@@ -496,13 +510,11 @@ style="display:none;">
 🏠<br>หน้าหลัก
 </div>
 
-<div onclick="window.location.href='mom4.html'" class="active">
+<div onclick="window.location.href='mom4.html'">
 🪐<br>รวมโพสต์
 </div>
 
-<div class="space"></div>
-
-<div onclick="window.location.href='mom2.html'">
+<div class="active">
 👤<br>โปรไฟล์
 </div>
 
@@ -511,6 +523,7 @@ style="display:none;">
 </div>
 
 </div>
+
 <script type="module">
 
 import { initializeApp }
@@ -565,7 +578,17 @@ let currentUser = null;
 
 let imageBase64 = "";
 
-/* USER */
+/* สุ่ม ID */
+
+function generateUserID(){
+
+return Math.floor(
+100000 + Math.random() * 900000
+).toString();
+
+}
+
+/* โหลดผู้ใช้ */
 
 onAuthStateChanged(auth, async(user)=>{
 
@@ -573,13 +596,28 @@ if(user){
 
 currentUser = user;
 
-const ref = doc(db,"users",user.uid);
+const ref =
+doc(db,"users",user.uid);
 
-const snap = await getDoc(ref);
+const snap =
+await getDoc(ref);
 
 if(snap.exists()){
 
 const data = snap.data();
+
+if(!data.userID){
+
+const newID =
+generateUserID();
+
+await setDoc(ref,{
+userID:newID
+},{merge:true});
+
+data.userID = newID;
+
+}
 
 document.getElementById("avatar").src =
 data.photo || defaultAvatar;
@@ -591,17 +629,40 @@ document.getElementById("bio").innerText =
 data.bio || "ยังไม่มีข้อมูล";
 
 document.getElementById("userid").innerText =
-"ID : " + (data.userID || "000000");
+"ID : " + data.userID;
+
+}else{
+
+const newID =
+generateUserID();
+
+await setDoc(ref,{
+
+uid:user.uid,
+
+userID:newID,
+
+name:"ผู้ใช้ใหม่",
+
+bio:"ยังไม่มีข้อมูล",
+
+photo:defaultAvatar
+
+});
 
 }
 
 loadPosts();
 
+}else{
+
+window.location.href = "index.html";
+
 }
 
 });
 
-/* POPUP */
+/* เปิด popup */
 
 window.openPopup = function(){
 
@@ -617,7 +678,7 @@ document.getElementById("popup")
 
 }
 
-/* PICK IMAGE */
+/* เลือกรูป */
 
 window.pickImage = function(){
 
@@ -654,15 +715,17 @@ reader.readAsDataURL(file);
 
 });
 
-/* CREATE POST */
+/* โพสต์ */
 
 window.createPost = async function(){
 
 const text =
-document.getElementById("postText").value;
+document.getElementById("postText")
+.value;
 
 const hashtags =
-document.getElementById("hashtags").value;
+document.getElementById("hashtags")
+.value;
 
 if(text.trim()=="" && imageBase64==""){
 
@@ -685,9 +748,11 @@ time:Date.now()
 }
 );
 
-document.getElementById("postText").value = "";
+document.getElementById("postText")
+.value = "";
 
-document.getElementById("hashtags").value = "";
+document.getElementById("hashtags")
+.value = "";
 
 imageBase64 = "";
 
@@ -701,7 +766,7 @@ closePopup();
 
 }
 
-/* LOAD POSTS */
+/* โหลดโพสต์ */
 
 function loadPosts(){
 
@@ -720,6 +785,9 @@ feed.innerHTML = "";
 for(const docx of snap.docs){
 
 const data = docx.data();
+
+if(data.uid != currentUser.uid)
+continue;
 
 let ownerName = "ผู้ใช้";
 
@@ -791,10 +859,15 @@ post.innerHTML = `
 
 <img
 class="post-user-avatar"
-src="${ownerPhoto}">
+src="${ownerPhoto}"
+onclick="openProfile('${data.uid}')">
 
-<div class="post-username">
+<div
+class="post-username"
+onclick="openProfile('${data.uid}')">
+
 ${ownerName}
+
 </div>
 
 </div>
@@ -869,17 +942,30 @@ feed.appendChild(post);
 
 }
 
-/* LIKE */
+/* เปิดโปรไฟล์ */
+
+window.openProfile = function(uid){
+
+window.location.href =
+"profile.html?uid=" + uid;
+
+}
+
+/* กดใจ */
 
 window.likePost = async function(id){
 
-const ref = doc(db,"posts",id);
+const ref =
+doc(db,"posts",id);
 
-const snap = await getDoc(ref);
+const snap =
+await getDoc(ref);
 
-const data = snap.data();
+const data =
+snap.data();
 
-let likes = data.likes || [];
+let likes =
+data.likes || [];
 
 if(likes.includes(currentUser.uid)){
 
@@ -895,37 +981,7 @@ likes:likes
 
 }
 
-/* COMMENT */
-
-window.sendComment = async function(id){
-
-const input =
-document.getElementById("comment-"+id);
-
-const text = input.value;
-
-if(text.trim()=="") return;
-
-const ref = doc(db,"posts",id);
-
-const snap = await getDoc(ref);
-
-const data = snap.data();
-
-let comments =
-data.comments || [];
-
-comments.push(text);
-
-await updateDoc(ref,{
-comments:comments
-});
-
-input.value = "";
-
-}
-
-/* TOGGLE COMMENT */
+/* เปิดคอมเมนต์ */
 
 window.toggleComment = function(id){
 
@@ -946,7 +1002,44 @@ box.style.display = "block";
 
 }
 
-/* SHARE */
+/* ส่งคอมเมนต์ */
+
+window.sendComment = async function(id){
+
+const input =
+document.getElementById(
+"comment-"+id
+);
+
+const text =
+input.value;
+
+if(text.trim()=="")
+return;
+
+const ref =
+doc(db,"posts",id);
+
+const snap =
+await getDoc(ref);
+
+const data =
+snap.data();
+
+let comments =
+data.comments || [];
+
+comments.push(text);
+
+await updateDoc(ref,{
+comments:comments
+});
+
+input.value = "";
+
+}
+
+/* แชร์ */
 
 window.sharePost = function(id){
 
@@ -956,7 +1049,7 @@ window.location.origin +
 
 navigator.clipboard.writeText(link);
 
-alert("คัดลอกลิงก์โพสต์แล้ว");
+alert("คัดลอกลิงก์แล้ว");
 
 }
 
@@ -974,7 +1067,8 @@ document.addEventListener(
 'touchend',
 function (event) {
 
-const now = (new Date()).getTime();
+const now =
+(new Date()).getTime();
 
 if (now - lastTouchEnd <= 300) {
 event.preventDefault();
@@ -987,4 +1081,4 @@ lastTouchEnd = now;
 </script>
 
 </body>
-</html>
+  </html>
