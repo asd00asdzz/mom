@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+content="width=device-width,
+initial-scale=1.0,
+maximum-scale=1.0,
+user-scalable=no">
+
+<title>รวมโพสต์</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:sans-serif;
+-webkit-tap-highlight-color:transparent;
+}
+
+body{
+background:black;
+overflow:hidden;
+}
+
+/* FEED */
+
+.feed{
+height:100vh;
+overflow-y:scroll;
+scroll-snap-type:y mandatory;
+}
+
+.post{
+position:relative;
+width:100%;
+height:100vh;
+scroll-snap-align:start;
+background:black;
+overflow:hidden;
+}
+
+.post img,
+.post video{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+/* RIGHT BAR */
+
+.right-bar{
+position:absolute;
+right:12px;
+bottom:120px;
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:22px;
+z-index:10;
+}
+
+.profile-btn img{
+width:60px;
+height:60px;
+border-radius:50%;
+border:3px solid white;
+object-fit:cover;
+}
+
+.action{
+display:flex;
+flex-direction:column;
+align-items:center;
+color:white;
+font-size:14px;
+font-weight:bold;
+}
+
+.action-icon{
+font-size:34px;
+margin-bottom:5px;
+}
+
+/* INFO */
+
+.info{
+position:absolute;
+left:15px;
+bottom:110px;
+width:70%;
+color:white;
+z-index:10;
+}
+
+.username{
+font-size:21px;
+font-weight:bold;
+margin-bottom:10px;
+}
+
+.caption{
+font-size:17px;
+line-height:1.5;
+margin-bottom:10px;
+word-wrap:break-word;
+}
+
+.tags{
+font-size:15px;
+color:#ddd;
+margin-bottom:8px;
+}
+
+.views{
+font-size:14px;
+color:#ccc;
+}
+
+/* COMMENT */
+
+.comment-popup{
+position:fixed;
+left:0;
+right:0;
+bottom:-100%;
+height:70%;
+background:white;
+border-radius:30px 30px 0 0;
+z-index:999;
+transition:0.3s;
+padding:20px;
+overflow-y:auto;
+}
+
+.comment-title{
+font-size:22px;
+font-weight:bold;
+text-align:center;
+margin-bottom:20px;
+}
+
+.comment-item{
+background:#f3f3f3;
+padding:12px;
+border-radius:15px;
+margin-bottom:10px;
+font-size:15px;
+}
+
+.comment-send-box{
+position:sticky;
+bottom:0;
+background:white;
+display:flex;
+gap:10px;
+padding-top:10px;
+}
+
+.comment-input{
+flex:1;
+height:50px;
+border:none;
+background:#f3f3f3;
+border-radius:20px;
+padding:0 15px;
+font-size:16px;
+outline:none;
+}
+
+.send-btn{
+width:90px;
+border:none;
+background:#a855f7;
+color:white;
+border-radius:20px;
+font-size:16px;
+font-weight:bold;
+}
+
+/* MENU */
+
+.bottom{
+position:fixed;
+left:15px;
+right:15px;
+bottom:15px;
+background:rgba(255,255,255,0.95);
+border-radius:30px;
+display:flex;
+justify-content:space-around;
+padding:15px;
+box-shadow:0 0 15px rgba(0,0,0,0.2);
+z-index:100;
+backdrop-filter:blur(10px);
+}
+
+.bottom div{
+text-align:center;
+color:#777;
+font-size:14px;
+cursor:pointer;
+}
+
+.active{
+color:#a855f7 !important;
+font-weight:bold;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- FEED -->
+
+<div
+class="feed"
+id="feed">
+</div>
+
+<!-- COMMENTS -->
+
+<div
+class="comment-popup"
+id="commentPopup">
+
+<div class="comment-title">
+คอมเมนต์
+</div>
+
+<div id="commentsBox"></div>
+
+<div class="comment-send-box">
+
+<input
+type="text"
+id="commentInput"
+class="comment-input"
+placeholder="พิมพ์คอมเมนต์...">
+
+<button
+class="send-btn"
+onclick="sendComment()">
+ส่ง
+</button>
+
+</div>
+
+</div>
+
+<!-- ใส่แทน div class="bottom" เดิม -->
+
+<div class="bottom">
+
+<div onclick="window.location.href='mom1.html'">
+🏠<br>หน้าหลัก
+</div>
+
+<div onclick="window.location.href='mom4.html'" class="active">
+🪐<br>รวมโพสต์
+</div>
+
+<div class="space"></div>
+
+<div onclick="window.location.href='mom2.html'">
+👤<br>โปรไฟล์
+</div>
+
+<div onclick="window.location.href='mom3.html'">
+💬<br>แชท
+</div>
+
+</div>
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+getAuth,
+onAuthStateChanged
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+getFirestore,
+collection,
+query,
+orderBy,
+onSnapshot,
+doc,
+getDoc,
+updateDoc
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+/* FIREBASE */
+
+const firebaseConfig = {
+
+apiKey: "AIzaSyC2DbZMOJqGYUKkc2nhYU4B-oX41SYLupU",
+
+authDomain: "myloginapp-83797.firebaseapp.com",
+
+projectId: "myloginapp-83797",
+
+storageBucket: "myloginapp-83797.firebasestorage.app",
+
+messagingSenderId: "968361508229",
+
+appId: "1:968361508229:web:ece12a37d93ef48418d8ec"
+
+};
+
+const app = initializeApp(firebaseConfig);
+
+const auth = getAuth(app);
+
+const db = getFirestore(app);
+
+let currentUser = null;
+
+let currentPostID = "";
+
+/* USER */
+
+onAuthStateChanged(auth,(user)=>{
+
+if(user){
+
+currentUser = user;
+
+loadPosts();
+
+}
+
+});
+
+/* LOAD POSTS */
+
+function loadPosts(){
+
+const q = query(
+collection(db,"posts"),
+orderBy("time","desc")
+);
+
+onSnapshot(q, async(snap)=>{
+
+const feed =
+document.getElementById("feed");
+
+feed.innerHTML = "";
+
+for(const docx of snap.docs){
+
+const data = docx.data();
+
+const userRef =
+doc(db,"users",data.uid);
+
+const userSnap =
+await getDoc(userRef);
+
+let userData = {};
+
+if(userSnap.exists()){
+
+userData =
+userSnap.data();
+
+}
+
+const post =
+document.createElement("div");
+
+post.className = "post";
+
+/* VIEW */
+
+let views =
+data.views || [];
+
+if(
+currentUser &&
+!views.includes(currentUser.uid)
+){
+
+views.push(currentUser.uid);
+
+await updateDoc(
+doc(db,"posts",docx.id),
+{
+views:views
+}
+);
+
+}
+
+/* MEDIA */
+
+let mediaHTML = "";
+
+if(data.video){
+
+mediaHTML = `
+
+<video
+src="${data.video}"
+autoplay
+muted
+loop
+playsinline>
+</video>
+
+`;
+
+}else if(data.image){
+
+mediaHTML = `
+
+<img
+src="${data.image}">
+
+`;
+
+}
+
+/* HTML */
+
+post.innerHTML = `
+
+${mediaHTML}
+
+<div class="right-bar">
+
+<div
+class="profile-btn"
+onclick="openProfile('${data.uid}')">
+
+<img
+src="${
+userData.photo ||
+'https://cdn-icons-png.flaticon.com/512/4140/4140048.png'
+}">
+
+</div>
+
+<div
+class="action"
+onclick="likePost('${docx.id}')">
+
+<div class="action-icon">
+❤️
+</div>
+
+<div>
+${data.likes ? data.likes.length : 0}
+</div>
+
+</div>
+
+<div
+class="action"
+onclick="openComments('${docx.id}')">
+
+<div class="action-icon">
+💬
+</div>
+
+<div>
+${data.comments ? data.comments.length : 0}
+</div>
+
+</div>
+
+<div
+class="action"
+onclick="sharePost('${docx.id}')">
+
+<div class="action-icon">
+🔗
+</div>
+
+<div>
+แชร์
+</div>
+
+</div>
+
+<div class="action">
+
+<div class="action-icon">
+👁️
+</div>
+
+<div>
+${views.length}
+</div>
+
+</div>
+
+</div>
+
+<div class="info">
+
+<div class="username">
+@${userData.name || "ผู้ใช้"}
+</div>
+
+<div class="caption">
+${data.text || ""}
+</div>
+
+<div class="tags">
+${data.hashtags || ""}
+</div>
+
+<div class="views">
+ยอดวิว ${views.length}
+</div>
+
+</div>
+
+`;
+
+feed.appendChild(post);
+
+}
+
+});
+
+}
+
+/* PROFILE */
+
+window.openProfile = function(uid){
+
+window.location.href =
+"profileview.html?uid=" + uid;
+
+}
+
+/* LIKE */
+
+window.likePost =
+async function(id){
+
+const ref =
+doc(db,"posts",id);
+
+const snap =
+await getDoc(ref);
+
+const data =
+snap.data();
+
+let likes =
+data.likes || [];
+
+if(
+likes.includes(currentUser.uid)
+){
+
+return;
+
+}
+
+likes.push(currentUser.uid);
+
+await updateDoc(ref,{
+likes:likes
+});
+
+}
+
+/* SHARE */
+
+window.sharePost = function(id){
+
+const link =
+window.location.origin +
+"/post.html?id=" + id;
+
+navigator.clipboard.writeText(link);
+
+alert("คัดลอกลิงก์แล้ว");
+
+}
+
+/* OPEN COMMENTS */
+
+window.openComments =
+async function(id){
+
+currentPostID = id;
+
+document
+.getElementById("commentPopup")
+.style.bottom = "0";
+
+const ref =
+doc(db,"posts",id);
+
+const snap =
+await getDoc(ref);
+
+const data =
+snap.data();
+
+const commentsBox =
+document.getElementById("commentsBox");
+
+commentsBox.innerHTML = "";
+
+if(data.comments){
+
+data.comments.forEach(comment=>{
+
+commentsBox.innerHTML += `
+
+<div class="comment-item">
+
+${comment}
+
+</div>
+
+`;
+
+});
+
+}
+
+}
+
+/* SEND COMMENT */
+
+window.sendComment =
+async function(){
+
+const input =
+document.getElementById("commentInput");
+
+const text =
+input.value.trim();
+
+if(text=="") return;
+
+const ref =
+doc(db,"posts",currentPostID);
+
+const snap =
+await getDoc(ref);
+
+const data =
+snap.data();
+
+let comments =
+data.comments || [];
+
+comments.push(text);
+
+await updateDoc(ref,{
+comments:comments
+});
+
+input.value = "";
+
+openComments(currentPostID);
+
+}
+
+/* CLOSE COMMENT */
+
+document
+.getElementById("commentPopup")
+.addEventListener("click",function(e){
+
+if(e.target.id=="commentPopup"){
+
+document
+.getElementById("commentPopup")
+.style.bottom = "-100%";
+
+}
+
+});
+
+/* กันซูม */
+
+document.addEventListener(
+'gesturestart',
+function (e) {
+e.preventDefault();
+});
+
+let lastTouchEnd = 0;
+
+document.addEventListener(
+'touchend',
+function (event) {
+
+const now =
+(new Date()).getTime();
+
+if (
+now - lastTouchEnd <= 300
+) {
+
+event.preventDefault();
+
+}
+
+lastTouchEnd = now;
+
+}, false);
+
+</script>
+
+</body>
+</html>

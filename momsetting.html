@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+content="width=device-width,
+initial-scale=1.0,
+maximum-scale=1.0,
+user-scalable=no">
+
+<title>ตั้งค่าโปรไฟล์</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:sans-serif;
+-webkit-tap-highlight-color:transparent;
+}
+
+body{
+background:#f5f3fb;
+padding:20px;
+}
+
+.box{
+background:white;
+border-radius:30px;
+padding:25px;
+box-shadow:0 5px 15px rgba(0,0,0,0.05);
+}
+
+.title{
+font-size:28px;
+font-weight:bold;
+margin-bottom:25px;
+color:#7b61ff;
+text-align:center;
+}
+
+.avatar-box{
+display:flex;
+justify-content:center;
+margin-bottom:20px;
+}
+
+.avatar{
+width:140px;
+height:140px;
+border-radius:35px;
+object-fit:cover;
+background:#eee;
+box-shadow:0 5px 15px rgba(0,0,0,0.08);
+}
+
+input,textarea{
+width:100%;
+padding:15px;
+border:none;
+border-radius:18px;
+background:#f1f4ff;
+margin-top:15px;
+font-size:16px;
+outline:none;
+}
+
+textarea{
+height:120px;
+resize:none;
+}
+
+button{
+width:100%;
+padding:16px;
+border:none;
+border-radius:18px;
+background:linear-gradient(90deg,#ff77c8,#7d7bff);
+color:white;
+font-size:17px;
+margin-top:20px;
+cursor:pointer;
+}
+
+.back{
+margin-top:15px;
+background:#eee;
+color:#333;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="box">
+
+<div class="title">
+ตั้งค่าโปรไฟล์
+</div>
+
+<div class="avatar-box">
+<img id="avatar"
+class="avatar"
+src="https://cdn-icons-png.flaticon.com/512/4140/4140048.png">
+</div>
+
+<input type="file" id="file">
+
+<input type="text"
+id="name"
+placeholder="ชื่อใหม่">
+
+<input type="date"
+id="birthday">
+
+<textarea
+id="bio"
+placeholder="นิสัย / แนะนำตัว"></textarea>
+
+<button onclick="saveProfile()">
+บันทึกข้อมูล
+</button>
+
+<button class="back"
+onclick="window.location.href='mom2.html'">
+กลับ
+</button>
+
+</div>
+
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+getAuth,
+onAuthStateChanged
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+getFirestore,
+doc,
+getDoc,
+setDoc
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+
+apiKey: "AIzaSyC2DbZMOJqGYUKkc2nhYU4B-oX41SYLupU",
+
+authDomain: "myloginapp-83797.firebaseapp.com",
+
+projectId: "myloginapp-83797",
+
+storageBucket: "myloginapp-83797.firebasestorage.app",
+
+messagingSenderId: "968361508229",
+
+appId: "1:968361508229:web:ece12a37d93ef48418d8ec"
+
+};
+
+const app = initializeApp(firebaseConfig);
+
+const auth = getAuth(app);
+
+const db = getFirestore(app);
+
+let currentUser = null;
+
+const defaultAvatar =
+"https://cdn-icons-png.flaticon.com/512/4140/4140048.png";
+
+/* โหลดข้อมูล */
+
+onAuthStateChanged(auth, async(user)=>{
+
+if(user){
+
+currentUser = user;
+
+try{
+
+const ref = doc(db,"users",user.uid);
+
+const snap = await getDoc(ref);
+
+if(snap.exists()){
+
+const data = snap.data();
+
+document.getElementById("avatar").src =
+data.photo || defaultAvatar;
+
+document.getElementById("name").value =
+data.name || "";
+
+document.getElementById("birthday").value =
+data.birthday || "";
+
+document.getElementById("bio").value =
+data.bio || "";
+
+}
+
+}catch(error){
+
+console.log(error);
+
+}
+
+}
+
+});
+
+/* เปลี่ยนรูป */
+
+document.getElementById("file")
+.addEventListener("change",(e)=>{
+
+const file = e.target.files[0];
+
+if(!file) return;
+
+const reader = new FileReader();
+
+reader.onload = function(){
+
+document.getElementById("avatar").src =
+reader.result;
+
+};
+
+reader.readAsDataURL(file);
+
+});
+
+/* บันทึก */
+
+window.saveProfile = async function(){
+
+try{
+
+if(!currentUser){
+
+alert("ยังไม่ได้เข้าสู่ระบบ");
+
+return;
+
+}
+
+const name =
+document.getElementById("name").value || "ผู้ใช้ใหม่";
+
+const birthday =
+document.getElementById("birthday").value || "ไม่ได้ระบุ";
+
+const bio =
+document.getElementById("bio").value || "ยังไม่มีข้อมูล";
+
+const photo =
+document.getElementById("avatar").src || defaultAvatar;
+
+const userData = {
+
+uid: currentUser.uid,
+
+name: name,
+
+birthday: birthday,
+
+bio: bio,
+
+photo: photo,
+
+email: currentUser.email || "",
+
+updatedAt: Date.now()
+
+};
+
+/* บันทึก Firebase */
+
+await setDoc(
+doc(db,"users",currentUser.uid),
+userData
+);
+
+/* สำรองเครื่อง */
+
+localStorage.setItem(
+"profileData",
+JSON.stringify(userData)
+);
+
+alert("บันทึกสำเร็จ");
+
+window.location.href = "mom2.html";
+
+}catch(error){
+
+console.log(error);
+
+alert("บันทึกไม่ได้ : " + error.message);
+
+}
+
+}
+
+</script>
+
+</body>
+</html>

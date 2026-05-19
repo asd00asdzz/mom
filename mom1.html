@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>Love Chat Party</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:sans-serif;
+-webkit-tap-highlight-color:transparent;
+}
+
+html,body{
+width:100%;
+height:100%;
+overflow:hidden;
+background:#f5f3ff;
+}
+
+/* HOME */
+
+#homePage{
+width:100%;
+height:100vh;
+overflow-y:auto;
+padding:15px;
+padding-bottom:130px;
+}
+
+/* ADS */
+
+.ads{
+display:flex;
+overflow-x:auto;
+gap:12px;
+scroll-behavior:smooth;
+}
+
+.ads::-webkit-scrollbar{
+display:none;
+}
+
+.ad{
+min-width:100%;
+height:170px;
+border-radius:30px;
+padding:25px;
+color:white;
+display:flex;
+flex-direction:column;
+justify-content:center;
+flex-shrink:0;
+}
+
+.ad1{
+background:linear-gradient(135deg,#7d4cff,#b44cff);
+}
+
+.ad2{
+background:linear-gradient(135deg,#ff4fa0,#ff8f4f);
+}
+
+.ad3{
+background:linear-gradient(135deg,#00c9a7,#00b8ff);
+}
+
+.ad h2{
+font-size:32px;
+}
+
+.ad p{
+margin-top:10px;
+opacity:0.9;
+}
+
+.ad button{
+margin-top:18px;
+width:120px;
+height:42px;
+border:none;
+border-radius:30px;
+background:white;
+font-weight:bold;
+}
+
+/* ROOMS */
+
+.rooms{
+margin-top:22px;
+display:flex;
+flex-direction:column;
+gap:15px;
+}
+
+.room{
+background:white;
+border-radius:26px;
+padding:16px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+box-shadow:0 3px 15px rgba(0,0,0,0.06);
+}
+
+.room-left{
+display:flex;
+align-items:center;
+gap:14px;
+}
+
+.avatar{
+width:68px;
+height:68px;
+border-radius:50%;
+overflow:hidden;
+background:#ddd;
+flex-shrink:0;
+}
+
+.avatar img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+.room-name{
+font-size:18px;
+font-weight:bold;
+color:#222;
+}
+
+.live{
+color:#7d4cff;
+font-size:14px;
+font-weight:bold;
+}
+
+/* EMPTY */
+
+.empty{
+padding:100px 20px;
+text-align:center;
+color:#999;
+}
+
+.empty-icon{
+font-size:70px;
+}
+
+.empty h2{
+margin-top:15px;
+}
+
+/* CREATE */
+
+.create-btn{
+position:fixed;
+left:50%;
+transform:translateX(-50%);
+bottom:78px;
+width:75px;
+height:75px;
+border:none;
+border-radius:50%;
+background:linear-gradient(135deg,#7d4cff,#ff4fa0);
+color:white;
+font-size:42px;
+box-shadow:0 10px 25px rgba(0,0,0,0.2);
+z-index:999;
+}
+
+/* MODAL */
+
+.modal{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,0.45);
+display:none;
+justify-content:center;
+align-items:center;
+padding:20px;
+z-index:5000;
+}
+
+.modal-box{
+width:100%;
+max-width:400px;
+background:white;
+border-radius:28px;
+padding:24px;
+}
+
+.modal-title{
+font-size:24px;
+font-weight:bold;
+color:#222;
+margin-bottom:10px;
+}
+
+.modal input{
+width:100%;
+height:55px;
+margin-top:15px;
+padding:0 16px;
+border:none;
+border-radius:18px;
+background:#f2f2f2;
+outline:none;
+font-size:16px;
+}
+
+.modal button{
+width:100%;
+height:55px;
+margin-top:18px;
+border:none;
+border-radius:18px;
+background:linear-gradient(135deg,#7d4cff,#ff4fa0);
+color:white;
+font-size:17px;
+font-weight:bold;
+}
+
+/* ROOM PAGE */
+
+#roomPage{
+display:none;
+position:fixed;
+inset:0;
+background:#14082e;
+z-index:9999;
+color:white;
+overflow:hidden;
+}
+
+.room-top{
+padding:18px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.room-top-left{
+display:flex;
+align-items:center;
+gap:12px;
+}
+
+.back{
+font-size:28px;
+}
+
+.room-title{
+font-size:20px;
+font-weight:bold;
+}
+
+.room-id{
+font-size:13px;
+opacity:0.7;
+margin-top:4px;
+}
+
+/* SEATS */
+
+.people{
+padding:10px 20px;
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:18px;
+}
+
+.seat{
+text-align:center;
+}
+
+.circle{
+width:68px;
+height:68px;
+border-radius:50%;
+background:rgba(255,255,255,0.15);
+display:flex;
+justify-content:center;
+align-items:center;
+overflow:hidden;
+margin:auto;
+}
+
+.circle img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+.join{
+margin-top:8px;
+font-size:13px;
+background:rgba(255,255,255,0.1);
+padding:6px;
+border-radius:20px;
+}
+
+/* CHAT */
+
+.chat-messages{
+position:absolute;
+left:15px;
+right:15px;
+bottom:95px;
+height:210px;
+overflow-y:auto;
+display:flex;
+flex-direction:column;
+gap:10px;
+}
+
+.msg{
+background:rgba(255,255,255,0.08);
+padding:12px;
+border-radius:18px;
+font-size:14px;
+line-height:22px;
+word-break:break-word;
+}
+
+.chat-box{
+position:absolute;
+left:15px;
+right:15px;
+bottom:20px;
+display:flex;
+gap:10px;
+}
+
+.chat-input{
+flex:1;
+height:55px;
+border:none;
+border-radius:30px;
+padding:0 18px;
+font-size:16px;
+outline:none;
+}
+
+.send-btn{
+width:75px;
+border:none;
+border-radius:25px;
+background:linear-gradient(135deg,#7d4cff,#ff4fa0);
+color:white;
+font-size:16px;
+}
+
+/* MENU */
+
+.bottom{
+position:fixed;
+left:15px;
+right:15px;
+bottom:15px;
+background:white;
+border-radius:30px;
+display:flex;
+justify-content:space-around;
+padding:15px;
+box-shadow:0 0 15px rgba(0,0,0,0.08);
+z-index:1000;
+}
+
+.bottom div{
+text-align:center;
+font-size:14px;
+color:#666;
+}
+
+.active{
+color:#7d4cff !important;
+font-weight:bold;
+}
+
+.space{
+width:70px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="homePage">
+
+<div class="ads" id="slider">
+
+<div class="ad ad1">
+<h2>ปาร์ตี้ใหม่ 🎉</h2>
+<p>หาเพื่อนใหม่คุยสด</p>
+<button>เข้าดู</button>
+</div>
+
+<div class="ad ad2">
+<h2>กิจกรรม 🔥</h2>
+<p>คืนนี้มีแจกของ</p>
+<button>ดูเลย</button>
+</div>
+
+<div class="ad ad3">
+<h2>เปิดไมค์ 🎤</h2>
+<p>เข้าห้องร้องเพลง</p>
+<button>เข้าห้อง</button>
+</div>
+
+</div>
+
+<div class="rooms" id="roomsContainer"></div>
+
+</div>
+
+<button class="create-btn" onclick="openCreateModal()">
++
+</button>
+
+<!-- MODAL -->
+
+<div class="modal" id="createModal">
+
+<div class="modal-box">
+
+<div class="modal-title">
+สร้างห้องปาร์ตี้
+</div>
+
+<input type="text"
+id="roomName"
+placeholder="ใส่ชื่อห้อง">
+
+<input type="file"
+id="roomImage"
+accept="image/*">
+
+<button onclick="createRoom()">
+สร้างห้อง
+</button>
+
+</div>
+
+</div>
+
+<!-- ROOM -->
+
+<div id="roomPage">
+
+<div class="room-top">
+
+<div class="room-top-left">
+
+<div class="back"
+onclick="closeRoom()">
+←
+</div>
+
+<div>
+
+<div class="room-title"
+id="roomTitle">
+ห้อง
+</div>
+
+<div class="room-id"
+id="roomId">
+ID
+</div>
+
+</div>
+
+</div>
+
+<div>⋮</div>
+
+</div>
+
+<div class="people"
+id="peopleContainer">
+</div>
+
+<div class="chat-messages"
+id="chatMessages">
+</div>
+
+<div class="chat-box">
+
+<input type="text"
+class="chat-input"
+id="chatInput"
+placeholder="พิมพ์ข้อความ...">
+
+<button class="send-btn"
+onclick="sendMessage()">
+ส่ง
+</button>
+
+</div>
+
+</div>
+
+<!-- MENU -->
+
+<div class="bottom">
+
+<div onclick="location.href='mom1.html'">
+🏠<br>หน้าหลัก
+</div>
+
+<div class="active">
+🪐<br>รวมโพสต์
+</div>
+
+<div class="space"></div>
+
+<div onclick="location.href='mom2.html'">
+👤<br>โปรไฟล์
+</div>
+
+<div onclick="location.href='mom3.html'">
+💬<br>แชท
+</div>
+
+</div>
+
+<script>
+
+/* รูปสุ่ม */
+
+const randomAvatars = [
+
+"https://i.pravatar.cc/300?img=1",
+"https://i.pravatar.cc/300?img=2",
+"https://i.pravatar.cc/300?img=3",
+"https://i.pravatar.cc/300?img=4",
+"https://i.pravatar.cc/300?img=5",
+"https://i.pravatar.cc/300?img=6",
+"https://i.pravatar.cc/300?img=7",
+"https://i.pravatar.cc/300?img=8"
+
+];
+
+/* USER */
+
+const currentUser = {
+
+id:
+localStorage.getItem("user_id")
+||
+"user_" + Math.floor(Math.random()*999999),
+
+name:
+localStorage.getItem("profile_name")
+||
+localStorage.getItem("user_name")
+||
+"Guest",
+
+avatar:
+localStorage.getItem("profile_image")
+||
+localStorage.getItem("user_avatar")
+||
+randomAvatars[
+Math.floor(Math.random()*randomAvatars.length)
+]
+
+};
+
+/* SERVER */
+
+let rooms =
+JSON.parse(
+localStorage.getItem("global_rooms")
+) || [];
+
+let currentRoom = null;
+
+/* ADS */
+
+const slider =
+document.getElementById("slider");
+
+let index = 0;
+
+setInterval(()=>{
+
+index++;
+
+if(index > 2){
+index = 0;
+}
+
+slider.scrollTo({
+
+left:
+slider.clientWidth * index,
+
+behavior:"smooth"
+
+});
+
+},3000);
+
+/* RENDER */
+
+function renderRooms(){
+
+const box =
+document.getElementById(
+"roomsContainer"
+);
+
+box.innerHTML = "";
+
+if(rooms.length === 0){
+
+box.innerHTML = `
+
+<div class="empty">
+
+<div class="empty-icon">
+🪐
+</div>
+
+<h2>
+ยังไม่มีห้อง
+</h2>
+
+</div>
+
+`;
+
+return;
+
+}
+
+rooms.forEach(room=>{
+
+box.innerHTML += `
+
+<div class="room"
+onclick="openRoom('${room.id}')">
+
+<div class="room-left">
+
+<div class="avatar">
+
+<img src="${room.avatar}"
+onerror="this.src='https://i.pravatar.cc/300?img=1'">
+
+</div>
+
+<div>
+
+<div class="room-name">
+${room.name}
+</div>
+
+</div>
+
+</div>
+
+<div class="live">
+● LIVE
+</div>
+
+</div>
+
+`;
+
+});
+
+}
+
+renderRooms();
+
+/* OPEN MODAL */
+
+function openCreateModal(){
+
+const already =
+rooms.find(
+r => r.ownerId === currentUser.id
+);
+
+if(already){
+
+alert("1 บัญชีเปิดได้ 1 ห้อง");
+
+return;
+
+}
+
+document.getElementById(
+"createModal"
+).style.display = "flex";
+
+}
+
+/* CREATE ROOM */
+
+function createRoom(){
+
+const roomName =
+document.getElementById(
+"roomName"
+).value.trim();
+
+if(roomName === ""){
+
+alert("กรอกชื่อห้อง");
+
+return;
+
+}
+
+const imageInput =
+document.getElementById(
+"roomImage"
+);
+
+const file =
+imageInput.files[0];
+
+if(file){
+
+const reader =
+new FileReader();
+
+reader.onload = function(e){
+
+saveRoomData(
+e.target.result
+);
+
+};
+
+reader.readAsDataURL(file);
+
+}else{
+
+const randomImage =
+randomAvatars[
+Math.floor(
+Math.random()
+*
+randomAvatars.length
+)
+];
+
+saveRoomData(randomImage);
+
+}
+
+}
+
+/* SAVE ROOM */
+
+function saveRoomData(roomAvatar){
+
+const room = {
+
+id:
+"room_" + Date.now(),
+
+ownerId:
+currentUser.id,
+
+ownerName:
+currentUser.name,
+
+name:
+document.getElementById(
+"roomName"
+).value,
+
+avatar:
+roomAvatar,
+
+seats:[
+null,null,null,null,
+null,null,null,null
+],
+
+messages:[
+
+{
+name:"ระบบ",
+text:"ยินดีต้อนรับเข้าสู่ห้อง 🎉"
+}
+
+]
+
+};
+
+rooms.push(room);
+
+localStorage.setItem(
+
+"global_rooms",
+
+JSON.stringify(rooms)
+
+);
+
+document.getElementById(
+"createModal"
+).style.display = "none";
+
+document.getElementById(
+"roomName"
+).value = "";
+
+document.getElementById(
+"roomImage"
+).value = "";
+
+renderRooms();
+
+openRoom(room.id);
+
+}
+
+/* OPEN ROOM */
+
+function openRoom(roomId){
+
+currentRoom =
+rooms.find(
+r => r.id === roomId
+);
+
+if(!currentRoom) return;
+
+document.getElementById(
+"roomPage"
+).style.display = "block";
+
+document.getElementById(
+"roomTitle"
+).innerText =
+currentRoom.name;
+
+document.getElementById(
+"roomId"
+).innerText =
+"ID : " + currentRoom.id;
+
+renderSeats();
+
+renderMessages();
+
+}
+
+/* CLOSE ROOM */
+
+function closeRoom(){
+
+document.getElementById(
+"roomPage"
+).style.display = "none";
+
+}
+
+/* SEATS */
+
+function renderSeats(){
+
+const box =
+document.getElementById(
+"peopleContainer"
+);
+
+box.innerHTML = "";
+
+currentRoom.seats.forEach(
+(user,index)=>{
+
+if(user){
+
+box.innerHTML += `
+
+<div class="seat"
+onclick="leaveSeat(${index})">
+
+<div class="circle">
+
+<img src="${user.avatar}">
+
+</div>
+
+<div class="join">
+${user.name}
+</div>
+
+</div>
+
+`;
+
+}else{
+
+box.innerHTML += `
+
+<div class="seat"
+onclick="joinSeat(${index})">
+
+<div class="circle">
+🛋️
+</div>
+
+<div class="join">
+ขึ้นโต๊ะ
+</div>
+
+</div>
+
+`;
+
+}
+
+});
+
+}
+
+/* JOIN */
+
+function joinSeat(index){
+
+const already =
+currentRoom.seats.find(
+u => u && u.id === currentUser.id
+);
+
+if(already){
+
+alert("คุณขึ้นโต๊ะแล้ว");
+
+return;
+
+}
+
+currentRoom.seats[index] = {
+
+id:currentUser.id,
+
+name:currentUser.name,
+
+avatar:currentUser.avatar
+
+};
+
+saveRooms();
+
+}
+
+/* LEAVE */
+
+function leaveSeat(index){
+
+const seat =
+currentRoom.seats[index];
+
+if(!seat) return;
+
+if(seat.id !== currentUser.id)
+return;
+
+currentRoom.seats[index] = null;
+
+saveRooms();
+
+}
+
+/* CHAT */
+
+function renderMessages(){
+
+const box =
+document.getElementById(
+"chatMessages"
+);
+
+box.innerHTML = "";
+
+currentRoom.messages.forEach(msg=>{
+
+box.innerHTML += `
+
+<div class="msg">
+
+<b>${msg.name}</b><br>
+
+${msg.text}
+
+</div>
+
+`;
+
+});
+
+box.scrollTop =
+box.scrollHeight;
+
+}
+
+/* SEND */
+
+function sendMessage(){
+
+const input =
+document.getElementById(
+"chatInput"
+);
+
+const text =
+input.value.trim();
+
+if(text === "") return;
+
+currentRoom.messages.push({
+
+name:currentUser.name,
+
+text:text
+
+});
+
+input.value = "";
+
+saveRooms();
+
+}
+
+/* SAVE */
+
+function saveRooms(){
+
+rooms =
+rooms.map(r=>{
+
+if(r.id === currentRoom.id){
+
+return currentRoom;
+
+}
+
+return r;
+
+});
+
+localStorage.setItem(
+
+"global_rooms",
+
+JSON.stringify(rooms)
+
+);
+
+renderRooms();
+
+renderSeats();
+
+renderMessages();
+
+}
+
+/* AUTO UPDATE */
+
+setInterval(()=>{
+
+rooms =
+JSON.parse(
+localStorage.getItem(
+"global_rooms"
+)
+) || [];
+
+renderRooms();
+
+},1500);
+
+/* ENTER */
+
+document.getElementById(
+"chatInput"
+).addEventListener(
+"keypress",
+function(e){
+
+if(e.key === "Enter"){
+
+sendMessage();
+
+}
+
+});
+
+/* CLOSE MODAL */
+
+window.onclick = function(e){
+
+const modal =
+document.getElementById(
+"createModal"
+);
+
+if(e.target === modal){
+
+modal.style.display = "none";
+
+}
+
+};
+
+</script>
+
+</body>
+</html>

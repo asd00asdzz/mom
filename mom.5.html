@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+content="width=device-width,
+initial-scale=1.0,
+maximum-scale=1.0,
+user-scalable=no">
+
+<title>ห้องปาร์ตี้</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:sans-serif;
+-webkit-tap-highlight-color:transparent;
+}
+
+html,body{
+width:100%;
+height:100%;
+overflow:hidden;
+background:#14082e;
+}
+
+/* ROOM */
+
+#roomPage{
+width:100%;
+height:100vh;
+background:
+linear-gradient(to bottom,
+rgba(29,0,60,0.88),
+rgba(10,0,30,0.95)),
+url('https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=1200&auto=format&fit=crop');
+background-size:cover;
+background-position:center;
+position:relative;
+overflow:hidden;
+}
+
+/* TOP */
+
+.top-bar{
+position:absolute;
+top:15px;
+left:15px;
+right:15px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+z-index:999;
+}
+
+.top-btn{
+width:48px;
+height:48px;
+border-radius:50%;
+background:rgba(255,255,255,0.12);
+backdrop-filter:blur(6px);
+display:flex;
+justify-content:center;
+align-items:center;
+font-size:24px;
+color:white;
+}
+
+/* ROOM INFO */
+
+.room-info{
+position:absolute;
+top:16px;
+left:50%;
+transform:translateX(-50%);
+display:flex;
+align-items:center;
+gap:12px;
+color:white;
+}
+
+.room-avatar{
+width:50px;
+height:50px;
+border-radius:50%;
+overflow:hidden;
+border:2px solid rgba(255,255,255,0.25);
+}
+
+.room-avatar img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+.room-name{
+font-size:18px;
+font-weight:bold;
+}
+
+/* SEATS */
+
+.seats{
+padding:95px 14px 180px;
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:22px 10px;
+}
+
+.seat{
+text-align:center;
+}
+
+/* AVATAR */
+
+.avatar{
+width:58px;
+height:58px;
+border-radius:50%;
+margin:auto;
+background:rgba(255,255,255,0.12);
+border:2px solid rgba(255,255,255,0.08);
+display:flex;
+justify-content:center;
+align-items:center;
+font-size:24px;
+backdrop-filter:blur(4px);
+overflow:hidden;
+}
+
+.avatar img{
+width:100%;
+height:100%;
+object-fit:cover;
+display:block;
+}
+
+/* NAME */
+
+.username{
+margin-top:7px;
+font-size:12px;
+background:rgba(255,255,255,0.1);
+padding:4px 10px;
+border-radius:20px;
+display:inline-block;
+color:white;
+max-width:80px;
+overflow:hidden;
+white-space:nowrap;
+text-overflow:ellipsis;
+}
+
+/* STATUS */
+
+.speaking{
+margin-top:5px;
+font-size:11px;
+color:#00ff99;
+}
+
+/* CHAT */
+
+.chat-list{
+position:absolute;
+left:12px;
+right:12px;
+bottom:85px;
+max-height:160px;
+overflow-y:auto;
+display:flex;
+flex-direction:column;
+gap:8px;
+}
+
+.msg{
+background:rgba(0,0,0,0.35);
+padding:12px;
+border-radius:16px;
+color:white;
+font-size:14px;
+line-height:20px;
+backdrop-filter:blur(6px);
+}
+
+/* INPUT */
+
+.chat-box{
+position:absolute;
+left:12px;
+right:12px;
+bottom:18px;
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.chat-input{
+flex:1;
+height:54px;
+border:none;
+outline:none;
+border-radius:30px;
+padding:0 18px;
+font-size:16px;
+background:rgba(255,255,255,0.12);
+backdrop-filter:blur(6px);
+color:white;
+}
+
+.chat-input::placeholder{
+color:#ddd;
+}
+
+.send-btn{
+width:60px;
+height:54px;
+border:none;
+border-radius:22px;
+background:linear-gradient(135deg,#7d4cff,#ff4fa0);
+color:white;
+font-size:16px;
+font-weight:bold;
+}
+
+/* MENU */
+
+.menu-popup{
+position:absolute;
+top:70px;
+right:15px;
+width:180px;
+background:rgba(20,20,35,0.96);
+border-radius:20px;
+padding:10px;
+display:none;
+z-index:9999;
+}
+
+.menu-item{
+padding:14px;
+border-radius:14px;
+color:white;
+font-size:15px;
+}
+
+.menu-item:active{
+background:rgba(255,255,255,0.1);
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="roomPage">
+
+<!-- TOP -->
+
+<div class="top-bar">
+
+<div class="top-btn"
+onclick="history.back()">
+←
+</div>
+
+<div class="top-btn"
+onclick="toggleMenu()">
+⋮
+</div>
+
+</div>
+
+<!-- ROOM INFO -->
+
+<div class="room-info">
+
+<div class="room-avatar">
+
+<img id="roomAvatar"
+src="https://i.pravatar.cc/150?img=12">
+
+</div>
+
+<div class="room-name"
+id="roomName">
+ห้องปาร์ตี้
+</div>
+
+</div>
+
+<!-- MENU -->
+
+<div class="menu-popup"
+id="menuPopup">
+
+<div class="menu-item">
+🎤 เปิดไมค์
+</div>
+
+<div class="menu-item">
+🔇 ปิดไมค์
+</div>
+
+<div class="menu-item"
+onclick="leaveMySeat()">
+🚪 ลงจากโต๊ะ
+</div>
+
+</div>
+
+<!-- SEATS -->
+
+<div class="seats"
+id="seatsContainer">
+
+</div>
+
+<!-- CHAT -->
+
+<div class="chat-list"
+id="chatList">
+
+<div class="msg">
+ระบบ: ยินดีต้อนรับเข้าสู่ห้องปาร์ตี้
+</div>
+
+</div>
+
+<!-- INPUT -->
+
+<div class="chat-box">
+
+<input type="text"
+class="chat-input"
+id="messageInput"
+placeholder="พิมพ์ข้อความ...">
+
+<button class="send-btn"
+onclick="sendMessage()">
+ส่ง
+</button>
+
+</div>
+
+</div>
+
+<script>
+
+/* =========================
+   USER ACCOUNT
+========================= */
+
+const currentUser = {
+
+id:
+localStorage.getItem("user_id")
+||
+"user_" + Math.floor(Math.random()*999999),
+
+name:
+localStorage.getItem("user_name")
+||
+"ผู้ใช้",
+
+/* รูปโปรไฟล์บัญชี */
+
+avatar:
+localStorage.getItem("profile_image")
+||
+localStorage.getItem("user_avatar")
+||
+"https://i.pravatar.cc/150?img=12"
+
+};
+
+/* SAVE USER */
+
+localStorage.setItem(
+"user_id",
+currentUser.id
+);
+
+localStorage.setItem(
+"user_name",
+currentUser.name
+);
+
+localStorage.setItem(
+"user_avatar",
+currentUser.avatar
+);
+
+/* =========================
+   ROOM SERVER
+========================= */
+
+let roomData =
+JSON.parse(
+localStorage.getItem("party_room_data")
+) || {
+
+ownerId: currentUser.id,
+
+ownerName: currentUser.name,
+
+/* รูปห้อง = รูปเจ้าของ */
+
+roomAvatar: currentUser.avatar,
+
+roomName: "ห้องปาร์ตี้",
+
+seats:[
+null,null,null,null,
+null,null,null,null
+],
+
+messages:[
+
+{
+name:"ระบบ",
+text:"ยินดีต้อนรับเข้าสู่ห้องปาร์ตี้"
+}
+
+]
+
+};
+
+/* SAVE */
+
+function saveRoom(){
+
+localStorage.setItem(
+"party_room_data",
+JSON.stringify(roomData)
+);
+
+}
+
+/* =========================
+   ROOM INFO
+========================= */
+
+function loadRoomInfo(){
+
+document.getElementById(
+"roomAvatar"
+).src =
+roomData.roomAvatar;
+
+document.getElementById(
+"roomName"
+).innerText =
+roomData.roomName;
+
+}
+
+loadRoomInfo();
+
+/* =========================
+   RENDER SEATS
+========================= */
+
+function renderSeats(){
+
+const seatsContainer =
+document.getElementById(
+"seatsContainer"
+);
+
+seatsContainer.innerHTML = "";
+
+roomData.seats.forEach(
+(user,index)=>{
+
+if(user){
+
+seatsContainer.innerHTML += `
+
+<div class="seat"
+onclick="leaveSeat(${index})">
+
+<div class="avatar">
+
+<img src="${user.avatar}">
+
+</div>
+
+<div class="username">
+${user.name}
+</div>
+
+<div class="speaking">
+กำลังพูด...
+</div>
+
+</div>
+
+`;
+
+}else{
+
+seatsContainer.innerHTML += `
+
+<div class="seat"
+onclick="joinSeat(${index})">
+
+<div class="avatar">
+🛋️
+</div>
+
+<div class="username">
+ขึ้นโต๊ะ
+</div>
+
+</div>
+
+`;
+
+}
+
+});
+
+}
+
+renderSeats();
+
+/* =========================
+   JOIN SEAT
+========================= */
+
+function joinSeat(index){
+
+const already =
+roomData.seats.find(
+u => u && u.id === currentUser.id
+);
+
+if(already){
+
+alert("คุณขึ้นโต๊ะแล้ว");
+
+return;
+
+}
+
+roomData.seats[index] = {
+
+id: currentUser.id,
+
+name: currentUser.name,
+
+avatar: currentUser.avatar
+
+};
+
+saveRoom();
+
+renderSeats();
+
+}
+
+/* =========================
+   LEAVE SEAT
+========================= */
+
+function leaveSeat(index){
+
+const seat =
+roomData.seats[index];
+
+if(!seat) return;
+
+if(seat.id !== currentUser.id)
+return;
+
+roomData.seats[index] = null;
+
+saveRoom();
+
+renderSeats();
+
+}
+
+function leaveMySeat(){
+
+roomData.seats =
+roomData.seats.map(seat=>{
+
+if(
+seat &&
+seat.id === currentUser.id
+){
+
+return null;
+
+}
+
+return seat;
+
+});
+
+saveRoom();
+
+renderSeats();
+
+}
+
+/* =========================
+   CHAT
+========================= */
+
+function renderMessages(){
+
+const chatList =
+document.getElementById(
+"chatList"
+);
+
+chatList.innerHTML = "";
+
+roomData.messages.forEach(msg=>{
+
+chatList.innerHTML += `
+
+<div class="msg">
+
+<b>${msg.name}:</b>
+${msg.text}
+
+</div>
+
+`;
+
+});
+
+chatList.scrollTop =
+chatList.scrollHeight;
+
+}
+
+renderMessages();
+
+/* SEND */
+
+function sendMessage(){
+
+const input =
+document.getElementById(
+"messageInput"
+);
+
+const value =
+input.value.trim();
+
+if(value === "") return;
+
+roomData.messages.push({
+
+name: currentUser.name,
+
+text: value
+
+});
+
+saveRoom();
+
+renderMessages();
+
+input.value = "";
+
+}
+
+/* =========================
+   MENU
+========================= */
+
+function toggleMenu(){
+
+const menu =
+document.getElementById(
+"menuPopup"
+);
+
+if(menu.style.display === "block"){
+
+menu.style.display = "none";
+
+}else{
+
+menu.style.display = "block";
+
+}
+
+}
+
+/* CLOSE MENU */
+
+window.onclick = function(e){
+
+if(
+!e.target.closest(".top-btn")
+){
+
+document.getElementById(
+"menuPopup"
+).style.display = "none";
+
+}
+
+}
+
+/* =========================
+   AUTO UPDATE
+========================= */
+
+setInterval(()=>{
+
+roomData =
+JSON.parse(
+localStorage.getItem(
+"party_room_data"
+)
+) || roomData;
+
+loadRoomInfo();
+
+renderSeats();
+
+renderMessages();
+
+},1200);
+
+/* =========================
+   กันซูม
+========================= */
+
+document.addEventListener(
+'gesturestart',
+function (e) {
+e.preventDefault();
+});
+
+let lastTouchEnd = 0;
+
+document.addEventListener(
+'touchend',
+function (event) {
+
+const now =
+(new Date()).getTime();
+
+if(now - lastTouchEnd <= 300){
+event.preventDefault();
+}
+
+lastTouchEnd = now;
+
+}, false);
+
+</script>
+
+</body>
+</html>

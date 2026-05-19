@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>ห้องแชท</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:sans-serif;
+-webkit-tap-highlight-color:transparent;
+}
+
+body{
+background:#f5f5f5;
+height:100vh;
+overflow:hidden;
+}
+
+/* TOP */
+
+.top{
+height:75px;
+background:white;
+display:flex;
+align-items:center;
+padding:0 15px;
+box-shadow:0 2px 10px rgba(0,0,0,0.05);
+position:fixed;
+top:0;
+left:0;
+right:0;
+z-index:10;
+}
+
+.back{
+font-size:30px;
+margin-right:15px;
+cursor:pointer;
+}
+
+.top-profile{
+display:flex;
+align-items:center;
+gap:12px;
+cursor:pointer;
+}
+
+.top-avatar{
+width:50px;
+height:50px;
+border-radius:18px;
+object-fit:cover;
+background:#eee;
+}
+
+.top-name{
+font-size:20px;
+font-weight:bold;
+}
+
+/* CHAT */
+
+.chat-box{
+position:fixed;
+top:75px;
+bottom:90px;
+left:0;
+right:0;
+overflow-y:auto;
+padding:15px;
+display:flex;
+flex-direction:column;
+gap:10px;
+}
+
+.me{
+align-self:flex-end;
+background:#a855f7;
+color:white;
+padding:12px 15px;
+border-radius:20px 20px 5px 20px;
+max-width:75%;
+word-wrap:break-word;
+font-size:16px;
+}
+
+.other{
+align-self:flex-start;
+background:white;
+padding:12px 15px;
+border-radius:20px 20px 20px 5px;
+max-width:75%;
+word-wrap:break-word;
+font-size:16px;
+box-shadow:0 3px 10px rgba(0,0,0,0.05);
+}
+
+.chat-image{
+width:220px;
+border-radius:18px;
+margin-top:5px;
+}
+
+.audio-box{
+margin-top:8px;
+}
+
+audio{
+width:230px;
+}
+
+/* BOTTOM */
+
+.bottom{
+position:fixed;
+left:0;
+right:0;
+bottom:0;
+height:90px;
+background:white;
+display:flex;
+align-items:center;
+padding:0 10px;
+gap:10px;
+box-shadow:0 -2px 10px rgba(0,0,0,0.05);
+}
+
+.icon-btn{
+width:50px;
+height:50px;
+border-radius:50%;
+border:none;
+background:#f3f3f3;
+font-size:24px;
+cursor:pointer;
+}
+
+.input{
+flex:1;
+height:50px;
+border:none;
+background:#f3f3f3;
+border-radius:25px;
+padding:0 15px;
+font-size:16px;
+outline:none;
+}
+
+.send{
+width:65px;
+height:50px;
+border:none;
+background:#a855f7;
+color:white;
+border-radius:20px;
+font-size:16px;
+font-weight:bold;
+cursor:pointer;
+}
+
+#fileInput{
+display:none;
+}
+
+/* RECORD POPUP */
+
+.record-popup{
+position:fixed;
+top:0;
+left:0;
+right:0;
+bottom:0;
+background:rgba(0,0,0,0.7);
+display:none;
+justify-content:center;
+align-items:center;
+z-index:999;
+}
+
+.record-box{
+width:85%;
+background:white;
+border-radius:30px;
+padding:30px 20px;
+text-align:center;
+}
+
+.record-title{
+font-size:24px;
+font-weight:bold;
+margin-bottom:25px;
+}
+
+.wave{
+display:flex;
+justify-content:center;
+align-items:flex-end;
+gap:8px;
+height:80px;
+margin-bottom:30px;
+}
+
+.wave span{
+width:10px;
+height:25px;
+background:#a855f7;
+border-radius:20px;
+animation:wave 1s infinite ease-in-out;
+}
+
+.wave span:nth-child(2){
+animation-delay:0.1s;
+}
+
+.wave span:nth-child(3){
+animation-delay:0.2s;
+}
+
+.wave span:nth-child(4){
+animation-delay:0.3s;
+}
+
+.wave span:nth-child(5){
+animation-delay:0.4s;
+}
+
+@keyframes wave{
+
+0%{
+height:20px;
+}
+
+50%{
+height:70px;
+}
+
+100%{
+height:20px;
+}
+
+}
+
+.record-buttons{
+display:flex;
+gap:15px;
+}
+
+.cancel-btn{
+flex:1;
+height:55px;
+border:none;
+border-radius:20px;
+background:#eee;
+font-size:18px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.send-audio-btn{
+flex:1;
+height:55px;
+border:none;
+border-radius:20px;
+background:#a855f7;
+color:white;
+font-size:18px;
+font-weight:bold;
+cursor:pointer;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- TOP -->
+
+<div class="top">
+
+<div class="back"
+onclick="history.back()">
+←
+</div>
+
+<!-- กดโปรไฟล์ -->
+
+<div
+class="top-profile"
+onclick="openFriendProfile()">
+
+<img
+id="topAvatar"
+class="top-avatar"
+src="https://cdn-icons-png.flaticon.com/512/4140/4140048.png">
+
+<div
+id="topName"
+class="top-name">
+แชท
+</div>
+
+</div>
+
+</div>
+
+<!-- CHAT -->
+
+<div
+class="chat-box"
+id="chatBox">
+</div>
+
+<!-- RECORD -->
+
+<div
+class="record-popup"
+id="recordPopup">
+
+<div class="record-box">
+
+<div class="record-title">
+🎤 กำลังอัดเสียง...
+</div>
+
+<div class="wave">
+
+<span></span>
+<span></span>
+<span></span>
+<span></span>
+<span></span>
+
+</div>
+
+<div class="record-buttons">
+
+<button
+class="cancel-btn"
+onclick="cancelRecord()">
+ยกเลิก
+</button>
+
+<button
+class="send-audio-btn"
+onclick="sendRecordedAudio()">
+ส่ง
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- BOTTOM -->
+
+<div class="bottom">
+
+<button
+class="icon-btn"
+onclick="pickFile()">
+🖼️
+</button>
+
+<button
+class="icon-btn"
+onclick="startRecord()">
+🎤
+</button>
+
+<input
+type="text"
+id="msg"
+class="input"
+placeholder="พิมพ์ข้อความ...">
+
+<button
+class="send"
+onclick="sendMessage()">
+ส่ง
+</button>
+
+<input
+type="file"
+id="fileInput"
+accept="image/*">
+
+</div>
+
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+getAuth,
+onAuthStateChanged
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+getFirestore,
+collection,
+addDoc,
+query,
+orderBy,
+onSnapshot
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+/* FIREBASE */
+
+const firebaseConfig = {
+
+apiKey: "AIzaSyC2DbZMOJqGYUKkc2nhYU4B-oX41SYLupU",
+
+authDomain: "myloginapp-83797.firebaseapp.com",
+
+projectId: "myloginapp-83797",
+
+storageBucket: "myloginapp-83797.firebasestorage.app",
+
+messagingSenderId: "968361508229",
+
+appId: "1:968361508229:web:ece12a37d93ef48418d8ec"
+
+};
+
+const app = initializeApp(firebaseConfig);
+
+const auth = getAuth(app);
+
+const db = getFirestore(app);
+
+/* URL */
+
+const url =
+new URLSearchParams(window.location.search);
+
+const friendId =
+url.get("uid");
+
+const friendName =
+decodeURIComponent(
+url.get("name") || "แชท"
+);
+
+const friendPhoto =
+decodeURIComponent(
+url.get("photo") ||
+"https://cdn-icons-png.flaticon.com/512/4140/4140048.png"
+);
+
+/* SHOW TOP */
+
+document.getElementById("topName").innerText =
+friendName;
+
+document.getElementById("topAvatar").src =
+friendPhoto;
+
+/* เปิดโปรไฟล์ */
+
+window.openFriendProfile = function(){
+
+window.location.href =
+"profile.html?uid=" +
+encodeURIComponent(friendId);
+
+}
+
+/* USER */
+
+let currentUser = null;
+
+/* AUDIO */
+
+let mediaRecorder;
+
+let audioChunks = [];
+
+let streamRef = null;
+
+/* CHAT ID */
+
+function getChatId(uid1,uid2){
+
+return [uid1,uid2]
+.sort()
+.join("_");
+
+}
+
+/* LOGIN */
+
+onAuthStateChanged(auth,(user)=>{
+
+if(user){
+
+currentUser = user;
+
+loadMessages();
+
+}
+
+});
+
+/* SEND TEXT */
+
+window.sendMessage = async function(){
+
+const input =
+document.getElementById("msg");
+
+const text =
+input.value.trim();
+
+if(text=="") return;
+
+const chatId =
+getChatId(
+currentUser.uid,
+friendId
+);
+
+await addDoc(
+
+collection(
+db,
+"chats",
+chatId,
+"messages"
+),
+
+{
+type:"text",
+text:text,
+sender:currentUser.uid,
+time:Date.now()
+}
+
+);
+
+input.value = "";
+
+}
+
+/* LOAD MESSAGE */
+
+function loadMessages(){
+
+const chatId =
+getChatId(
+currentUser.uid,
+friendId
+);
+
+const q = query(
+
+collection(
+db,
+"chats",
+chatId,
+"messages"
+),
+
+orderBy("time")
+
+);
+
+onSnapshot(q,(snap)=>{
+
+const chatBox =
+document.getElementById("chatBox");
+
+chatBox.innerHTML = "";
+
+snap.forEach((docx)=>{
+
+const data =
+docx.data();
+
+const div =
+document.createElement("div");
+
+div.className =
+data.sender == currentUser.uid
+? "me"
+: "other";
+
+/* TEXT */
+
+if(data.type == "text"){
+
+div.innerText =
+data.text;
+
+}
+
+/* IMAGE */
+
+if(data.type == "image"){
+
+div.innerHTML = `
+
+<img
+class="chat-image"
+src="${data.image}">
+
+`;
+
+}
+
+/* AUDIO */
+
+if(data.type == "audio"){
+
+div.innerHTML = `
+
+<div class="audio-box">
+
+<audio controls
+src="${data.audio}">
+</audio>
+
+</div>
+
+`;
+
+}
+
+chatBox.appendChild(div);
+
+});
+
+chatBox.scrollTop =
+chatBox.scrollHeight;
+
+});
+
+}
+
+/* PICK IMAGE */
+
+window.pickFile = function(){
+
+document
+.getElementById("fileInput")
+.click();
+
+}
+
+/* SEND IMAGE */
+
+document
+.getElementById("fileInput")
+
+.addEventListener(
+"change",
+async function(e){
+
+const file =
+e.target.files[0];
+
+if(!file) return;
+
+const reader =
+new FileReader();
+
+reader.onload =
+async function(){
+
+const base64 =
+reader.result;
+
+const chatId =
+getChatId(
+currentUser.uid,
+friendId
+);
+
+await addDoc(
+
+collection(
+db,
+"chats",
+chatId,
+"messages"
+),
+
+{
+type:"image",
+image:base64,
+sender:currentUser.uid,
+time:Date.now()
+}
+
+);
+
+}
+
+reader.readAsDataURL(file);
+
+});
+
+/* START RECORD */
+
+window.startRecord =
+async function(){
+
+try{
+
+streamRef =
+await navigator
+.mediaDevices
+.getUserMedia({
+audio:true
+});
+
+audioChunks = [];
+
+mediaRecorder =
+new MediaRecorder(streamRef);
+
+/* เก็บเสียง */
+
+mediaRecorder.ondataavailable =
+e => {
+
+if(e.data.size > 0){
+
+audioChunks.push(e.data);
+
+}
+
+};
+
+mediaRecorder.start();
+
+/* เปิด popup */
+
+document
+.getElementById("recordPopup")
+.style.display = "flex";
+
+}catch(error){
+
+alert("ไมค์ใช้งานไม่ได้");
+
+console.log(error);
+
+}
+
+}
+
+/* CANCEL */
+
+window.cancelRecord = function(){
+
+if(mediaRecorder &&
+mediaRecorder.state != "inactive"){
+
+mediaRecorder.stop();
+
+}
+
+if(streamRef){
+
+streamRef
+.getTracks()
+.forEach(track=>track.stop());
+
+}
+
+audioChunks = [];
+
+document
+.getElementById("recordPopup")
+.style.display = "none";
+
+}
+
+/* SEND AUDIO */
+
+window.sendRecordedAudio =
+function(){
+
+if(!mediaRecorder) return;
+
+mediaRecorder.onstop =
+async ()=>{
+
+if(audioChunks.length <= 0){
+return;
+}
+
+const blob =
+new Blob(
+audioChunks,
+{
+type:"audio/webm"
+}
+);
+
+const reader =
+new FileReader();
+
+reader.onloadend =
+async ()=>{
+
+const base64 =
+reader.result;
+
+const chatId =
+getChatId(
+currentUser.uid,
+friendId
+);
+
+await addDoc(
+
+collection(
+db,
+"chats",
+chatId,
+"messages"
+),
+
+{
+type:"audio",
+audio:base64,
+sender:currentUser.uid,
+time:Date.now()
+}
+
+);
+
+};
+
+reader.readAsDataURL(blob);
+
+};
+
+mediaRecorder.stop();
+
+if(streamRef){
+
+streamRef
+.getTracks()
+.forEach(track=>track.stop());
+
+}
+
+document
+.getElementById("recordPopup")
+.style.display = "none";
+
+}
+
+/* ENTER */
+
+document
+.getElementById("msg")
+
+.addEventListener(
+"keypress",
+function(e){
+
+if(e.key==="Enter"){
+
+sendMessage();
+
+}
+
+});
+
+/* กันซูม */
+
+document.addEventListener(
+'gesturestart',
+function (e) {
+e.preventDefault();
+});
+
+let lastTouchEnd = 0;
+
+document.addEventListener(
+'touchend',
+function (event) {
+
+const now =
+(new Date()).getTime();
+
+if (
+now - lastTouchEnd <= 300
+) {
+
+event.preventDefault();
+
+}
+
+lastTouchEnd = now;
+
+}, false);
+
+</script>
+
+</body>
+</html>

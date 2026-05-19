@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Love Chat Login</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:sans-serif;
+-webkit-tap-highlight-color:transparent;
+}
+
+body{
+width:100%;
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+background:linear-gradient(135deg,#eaf6ff,#d7ecff,#ffdff1);
+padding:20px;
+}
+
+.box{
+width:100%;
+max-width:340px;
+background:white;
+padding:25px;
+border-radius:25px;
+text-align:center;
+box-shadow:0 0 25px rgba(0,0,0,0.12);
+}
+
+.logo{
+width:120px;
+height:120px;
+border-radius:30px;
+margin-bottom:15px;
+object-fit:cover;
+}
+
+h2{
+color:#4d8dff;
+margin-bottom:20px;
+}
+
+input{
+width:100%;
+padding:14px;
+margin:10px 0;
+border:none;
+border-radius:12px;
+background:#eef6ff;
+color:#333;
+font-size:15px;
+outline:none;
+}
+
+button{
+width:100%;
+padding:14px;
+border:none;
+border-radius:14px;
+margin-top:12px;
+font-size:16px;
+cursor:pointer;
+font-weight:bold;
+}
+
+.gmail-btn{
+background:#5aa9ff;
+color:white;
+}
+
+.google-btn{
+background:white;
+border:2px solid #dbe7ff;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:10px;
+}
+
+.google-btn img{
+width:22px;
+}
+
+.guest-btn{
+background:linear-gradient(90deg,#ff77c8,#7d7bff);
+color:white;
+}
+
+.loading{
+margin-top:15px;
+font-size:14px;
+color:#777;
+display:none;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="box">
+
+<img
+class="logo"
+src="https://i.ibb.co/JRs1mNzg/file-0000000028a87207b73fc1ca14ebb044.png">
+
+<h2>Love Chat</h2>
+
+<input
+type="email"
+id="email"
+placeholder="Gmail">
+
+<input
+type="password"
+id="password"
+placeholder="Password">
+
+<button
+class="gmail-btn"
+onclick="login()">
+สมัคร / เข้าสู่ระบบ
+</button>
+
+<button
+class="google-btn"
+onclick="googleLogin()">
+
+<img
+src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png">
+
+Login with Google
+
+</button>
+
+<button
+class="guest-btn"
+onclick="guestLogin()">
+เข้าใช้งานเลย
+</button>
+
+<div
+class="loading"
+id="loading">
+กำลังเข้าสู่ระบบ...
+</div>
+
+</div>
+
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+getAuth,
+GoogleAuthProvider,
+signInWithPopup,
+signInWithEmailAndPassword,
+createUserWithEmailAndPassword,
+onAuthStateChanged
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+getFirestore,
+doc,
+setDoc
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+
+apiKey: "AIzaSyC2DbZMOJqGYUKkc2nhYU4B-oX41SYLupU",
+
+authDomain: "myloginapp-83797.firebaseapp.com",
+
+projectId: "myloginapp-83797",
+
+storageBucket: "myloginapp-83797.firebasestorage.app",
+
+messagingSenderId: "968361508229",
+
+appId: "1:968361508229:web:ece12a37d93ef48418d8ec"
+
+};
+
+const app = initializeApp(firebaseConfig);
+
+const auth = getAuth(app);
+
+const db = getFirestore(app);
+
+const provider = new GoogleAuthProvider();
+
+/* AUTO LOGIN */
+
+onAuthStateChanged(auth,(user)=>{
+
+if(user){
+
+window.location.href = "mom1.html";
+
+}
+
+});
+
+/* EMAIL LOGIN */
+
+window.login = async function(){
+
+const email =
+document.getElementById("email").value;
+
+const password =
+document.getElementById("password").value;
+
+if(email == "" || password == ""){
+
+alert("กรอกข้อมูลก่อน");
+
+return;
+
+}
+
+document.getElementById("loading")
+.style.display = "block";
+
+try{
+
+const userCredential =
+await createUserWithEmailAndPassword(
+auth,
+email,
+password
+);
+
+const user = userCredential.user;
+
+await setDoc(doc(db,"users",user.uid),{
+
+uid:user.uid,
+
+email:user.email,
+
+type:"email",
+
+createdAt:new Date().toISOString()
+
+},{merge:true});
+
+window.location.href = "mom1.html";
+
+}
+
+catch(error){
+
+if(error.code ===
+"auth/email-already-in-use"){
+
+try{
+
+const result =
+await signInWithEmailAndPassword(
+auth,
+email,
+password
+);
+
+const user = result.user;
+
+await setDoc(doc(db,"users",user.uid),{
+
+uid:user.uid,
+
+email:user.email,
+
+lastLogin:new Date().toISOString()
+
+},{merge:true});
+
+window.location.href = "mom1.html";
+
+}
+
+catch(err){
+
+alert("รหัสผ่านผิด");
+
+}
+
+}
+
+else{
+
+alert(error.message);
+
+}
+
+}
+
+document.getElementById("loading")
+.style.display = "none";
+
+}
+
+/* GOOGLE LOGIN */
+
+window.googleLogin = async function(){
+
+document.getElementById("loading")
+.style.display = "block";
+
+try{
+
+const result =
+await signInWithPopup(auth, provider);
+
+const user = result.user;
+
+await setDoc(doc(db,"users",user.uid),{
+
+uid:user.uid,
+
+name:user.displayName || "ไม่มีชื่อ",
+
+email:user.email || "",
+
+photo:user.photoURL || "",
+
+type:"google",
+
+loginTime:new Date().toISOString()
+
+},{merge:true});
+
+window.location.href = "mom1.html";
+
+}
+
+catch(error){
+
+alert(error.message);
+
+}
+
+document.getElementById("loading")
+.style.display = "none";
+
+}
+
+/* GUEST */
+
+window.guestLogin = function(){
+
+window.location.href = "mom1.html";
+
+}
+
+/* กันซูม */
+
+document.addEventListener(
+'gesturestart',
+function (e) {
+e.preventDefault();
+});
+
+let lastTouchEnd = 0;
+
+document.addEventListener(
+'touchend',
+function (event) {
+
+const now = (new Date()).getTime();
+
+if (now - lastTouchEnd <= 300) {
+event.preventDefault();
+}
+
+lastTouchEnd = now;
+
+}, false);
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>แชท</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:sans-serif;
+-webkit-tap-highlight-color:transparent;
+}
+
+body{
+background:#f7f5fb;
+padding-bottom:120px;
+}
+
+/* TOP */
+
+.top{
+padding:20px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.title{
+font-size:28px;
+font-weight:bold;
+color:#222;
+}
+
+.add-btn{
+background:#a855f7;
+color:white;
+padding:12px 18px;
+border-radius:20px;
+font-size:15px;
+font-weight:bold;
+display:flex;
+align-items:center;
+gap:8px;
+cursor:pointer;
+}
+
+/* POPUP */
+
+.popup{
+position:fixed;
+top:0;
+left:0;
+right:0;
+bottom:0;
+background:rgba(0,0,0,0.45);
+display:none;
+justify-content:center;
+align-items:center;
+z-index:100;
+}
+
+.popup-box{
+width:90%;
+background:white;
+border-radius:30px;
+padding:20px;
+}
+
+.popup-title{
+font-size:22px;
+font-weight:bold;
+margin-bottom:15px;
+text-align:center;
+}
+
+.search-input{
+width:100%;
+height:55px;
+border:none;
+background:#f3f3f3;
+border-radius:18px;
+padding:0 15px;
+font-size:18px;
+outline:none;
+}
+
+.search-btn{
+margin-top:15px;
+width:100%;
+height:55px;
+border:none;
+background:#a855f7;
+color:white;
+font-size:18px;
+border-radius:18px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.close-btn{
+margin-top:10px;
+width:100%;
+height:50px;
+border:none;
+background:#eee;
+border-radius:18px;
+font-size:16px;
+cursor:pointer;
+}
+
+/* RESULT */
+
+.result{
+margin-top:20px;
+display:none;
+align-items:center;
+justify-content:space-between;
+background:#f7f5fb;
+padding:15px;
+border-radius:20px;
+}
+
+.result-left{
+display:flex;
+align-items:center;
+gap:12px;
+}
+
+.result img{
+width:65px;
+height:65px;
+border-radius:20px;
+object-fit:cover;
+}
+
+.result-name{
+font-size:18px;
+font-weight:bold;
+}
+
+.result-id{
+font-size:14px;
+color:#888;
+margin-top:5px;
+}
+
+.add-friend{
+width:50px;
+height:50px;
+border-radius:50%;
+background:#a855f7;
+color:white;
+border:none;
+font-size:28px;
+cursor:pointer;
+}
+
+/* CHAT LIST */
+
+.chat-list{
+padding:0 15px;
+}
+
+.chat-item{
+background:white;
+border-radius:28px;
+padding:15px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+margin-bottom:15px;
+box-shadow:0 5px 15px rgba(0,0,0,0.05);
+cursor:pointer;
+}
+
+.chat-left{
+display:flex;
+align-items:center;
+gap:15px;
+}
+
+.chat-avatar{
+width:70px;
+height:70px;
+border-radius:24px;
+object-fit:cover;
+background:#eee;
+}
+
+.chat-name{
+font-size:20px;
+font-weight:bold;
+color:#222;
+}
+
+.chat-id{
+font-size:14px;
+color:#999;
+margin-top:5px;
+}
+
+/* BOTTOM */
+
+.bottom{
+position:fixed;
+left:15px;
+right:15px;
+bottom:15px;
+background:white;
+border-radius:30px;
+display:flex;
+justify-content:space-around;
+padding:15px;
+box-shadow:0 0 15px rgba(0,0,0,0.08);
+}
+
+.bottom div{
+text-align:center;
+color:#777;
+font-size:14px;
+cursor:pointer;
+}
+
+.active{
+color:#a855f7 !important;
+font-weight:bold;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- TOP -->
+
+<div class="top">
+
+<div class="title">
+แชท
+</div>
+
+<div class="add-btn"
+onclick="openPopup()">
+👥 เพิ่มเพื่อน
+</div>
+
+</div>
+
+<!-- CHAT LIST -->
+
+<div class="chat-list"
+id="chatList">
+</div>
+
+<!-- POPUP -->
+
+<div class="popup"
+id="popup">
+
+<div class="popup-box">
+
+<div class="popup-title">
+เพิ่มเพื่อนด้วย ID
+</div>
+
+<input
+type="number"
+id="searchId"
+class="search-input"
+placeholder="กรอก ID เพื่อน 6 หลัก">
+
+<button
+class="search-btn"
+onclick="searchFriend()">
+ค้นหา
+</button>
+
+<div
+class="result"
+id="result">
+
+<div class="result-left">
+
+<img
+id="resultPhoto"
+src="https://cdn-icons-png.flaticon.com/512/4140/4140048.png">
+
+<div>
+
+<div
+class="result-name"
+id="resultName">
+...
+</div>
+
+<div
+class="result-id"
+id="resultId">
+ID : ...
+</div>
+
+</div>
+
+</div>
+
+<button
+class="add-friend"
+onclick="addFriend()">
++
+</button>
+
+</div>
+
+<button
+class="close-btn"
+onclick="closePopup()">
+ปิด
+</button>
+
+</div>
+
+</div>
+
+<!-- ใส่แทน div class="bottom" เดิม -->
+
+<div class="bottom">
+
+<div onclick="window.location.href='mom1.html'">
+🏠<br>หน้าหลัก
+</div>
+
+<div onclick="window.location.href='mom4.html'" class="active">
+🪐<br>รวมโพสต์
+</div>
+
+<div class="space"></div>
+
+<div onclick="window.location.href='mom2.html'">
+👤<br>โปรไฟล์
+</div>
+
+<div onclick="window.location.href='mom3.html'">
+💬<br>แชท
+</div>
+
+</div>
+
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+getAuth,
+onAuthStateChanged
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+getFirestore,
+collection,
+query,
+where,
+getDocs,
+doc,
+setDoc,
+getDoc
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+/* FIREBASE */
+
+const firebaseConfig = {
+
+apiKey: "AIzaSyC2DbZMOJqGYUKkc2nhYU4B-oX41SYLupU",
+
+authDomain: "myloginapp-83797.firebaseapp.com",
+
+projectId: "myloginapp-83797",
+
+storageBucket: "myloginapp-83797.firebasestorage.app",
+
+messagingSenderId: "968361508229",
+
+appId: "1:968361508229:web:ece12a37d93ef48418d8ec"
+
+};
+
+const app = initializeApp(firebaseConfig);
+
+const auth = getAuth(app);
+
+const db = getFirestore(app);
+
+let currentUser = null;
+let foundUser = null;
+
+/* เปิด popup */
+
+window.openPopup = function(){
+
+document.getElementById("popup").style.display = "flex";
+
+}
+
+/* ปิด popup */
+
+window.closePopup = function(){
+
+document.getElementById("popup").style.display = "none";
+
+document.getElementById("result").style.display = "none";
+
+document.getElementById("searchId").value = "";
+
+}
+
+/* โหลดผู้ใช้ */
+
+onAuthStateChanged(auth, async(user)=>{
+
+if(user){
+
+currentUser = user;
+
+loadFriends();
+
+}else{
+
+alert("กรุณาเข้าสู่ระบบ");
+
+}
+
+});
+
+/* โหลดเพื่อน */
+
+async function loadFriends(){
+
+const chatList =
+document.getElementById("chatList");
+
+chatList.innerHTML = "";
+
+const ref = collection(
+db,
+"users",
+currentUser.uid,
+"friends"
+);
+
+const snap = await getDocs(ref);
+
+if(snap.empty){
+
+chatList.innerHTML = `
+<div style="
+text-align:center;
+padding:50px;
+color:#999;
+font-size:18px;
+">
+ยังไม่มีเพื่อน
+</div>
+`;
+
+return;
+
+}
+
+snap.forEach((docx)=>{
+
+const data = docx.data();
+
+chatList.innerHTML += `
+
+<div class="chat-item"
+onclick="openChat(
+'${docx.id}',
+'${data.name || "ไม่มีชื่อ"}',
+'${data.photo || ""}'
+)">
+
+<div class="chat-left">
+
+<img class="chat-avatar"
+src="${data.photo || 'https://cdn-icons-png.flaticon.com/512/4140/4140048.png'}">
+
+<div>
+
+<div class="chat-name">
+${data.name || 'ไม่มีชื่อ'}
+</div>
+
+<div class="chat-id">
+ID : ${data.userID || '000000'}
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+`;
+
+});
+
+}
+
+/* เปิดหน้าแชท */
+
+window.openChat = function(uid,name,photo){
+
+window.location.href =
+"chatroom.html?uid=" +
+encodeURIComponent(uid) +
+"&name=" +
+encodeURIComponent(name) +
+"&photo=" +
+encodeURIComponent(photo);
+
+}
+
+/* ค้นหาเพื่อน */
+
+window.searchFriend = async function(){
+
+const id =
+document.getElementById("searchId")
+.value
+.trim();
+
+if(id.length != 6){
+
+alert("กรุณากรอก ID 6 หลัก");
+return;
+
+}
+
+const q = query(
+collection(db,"users"),
+where("userID","==",id)
+);
+
+const snap = await getDocs(q);
+
+if(snap.empty){
+
+alert("ไม่พบผู้ใช้");
+return;
+
+}
+
+snap.forEach((docx)=>{
+
+foundUser = {
+uid: docx.id,
+...docx.data()
+};
+
+document.getElementById("result")
+.style.display = "flex";
+
+document.getElementById("resultPhoto").src =
+foundUser.photo ||
+"https://cdn-icons-png.flaticon.com/512/4140/4140048.png";
+
+document.getElementById("resultName").innerText =
+foundUser.name || "ไม่มีชื่อ";
+
+document.getElementById("resultId").innerText =
+"ID : " + foundUser.userID;
+
+});
+
+}
+
+/* เพิ่มเพื่อน */
+
+window.addFriend = async function(){
+
+if(!foundUser){
+
+alert("ยังไม่ได้ค้นหาเพื่อน");
+return;
+
+}
+
+if(foundUser.uid === currentUser.uid){
+
+alert("เพิ่มตัวเองไม่ได้");
+return;
+
+}
+
+/* โหลดข้อมูลตัวเอง */
+
+const myRef = doc(
+db,
+"users",
+currentUser.uid
+);
+
+const mySnap = await getDoc(myRef);
+
+if(!mySnap.exists()){
+
+alert("ไม่พบข้อมูลตัวเอง");
+return;
+
+}
+
+const myData = mySnap.data();
+
+/* โหลดข้อมูลเพื่อน */
+
+const friendRef = doc(
+db,
+"users",
+foundUser.uid
+);
+
+const friendSnap = await getDoc(friendRef);
+
+if(!friendSnap.exists()){
+
+alert("ไม่พบข้อมูลเพื่อน");
+return;
+
+}
+
+const friendData = friendSnap.data();
+
+/* เพิ่มเพื่อนให้เรา */
+
+await setDoc(
+
+doc(
+db,
+"users",
+currentUser.uid,
+"friends",
+foundUser.uid
+),
+
+{
+
+uid: friendData.uid,
+
+name:
+friendData.name || "ไม่มีชื่อ",
+
+photo:
+friendData.photo ||
+"https://cdn-icons-png.flaticon.com/512/4140/4140048.png",
+
+userID:
+friendData.userID || "000000"
+
+}
+
+);
+
+/* เพิ่มเรากลับไปให้อีกฝ่าย */
+
+await setDoc(
+
+doc(
+db,
+"users",
+foundUser.uid,
+"friends",
+currentUser.uid
+),
+
+{
+
+uid: myData.uid,
+
+name:
+myData.name || "ไม่มีชื่อ",
+
+photo:
+myData.photo ||
+"https://cdn-icons-png.flaticon.com/512/4140/4140048.png",
+
+userID:
+myData.userID || "000000"
+
+}
+
+);
+
+alert("เพิ่มเพื่อนสำเร็จ");
+
+closePopup();
+
+loadFriends();
+
+}
+
+/* กันซูม */
+
+document.addEventListener(
+'gesturestart',
+function (e) {
+e.preventDefault();
+});
+
+let lastTouchEnd = 0;
+
+document.addEventListener(
+'touchend',
+function (event) {
+
+const now = (new Date()).getTime();
+
+if (now - lastTouchEnd <= 300) {
+
+event.preventDefault();
+
+}
+
+lastTouchEnd = now;
+
+}, false);
+
+</script>
+
+</body>
+</html>
